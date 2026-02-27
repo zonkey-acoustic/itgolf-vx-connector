@@ -1,0 +1,8 @@
+vendor
+.DS_Store
+.device-analysis/
+.app-analysis/
+.playwright-mcp/
+*.resources
+vx-connector.exe
+.claude/settings.local.json

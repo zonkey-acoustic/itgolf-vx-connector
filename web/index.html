@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Tees Connector</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/device.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Infinite Tees</h2>
+                <div class="app-subtitle">Unofficial Connector</div>
+            </div>
+
+            <div class="nav-menu">
+                <button class="nav-button active" data-screen="protee">
+                    <span class="material-icons">radar</span>
+                    ProTee VX
+                </button>
+                <button class="nav-button" data-screen="infiniteTees">
+                    <span class="material-icons">golf_course</span>
+                    Infinite Tees
+                </button>
+                <button class="nav-button" data-screen="settings">
+                    <span class="material-icons">settings</span>
+                    Settings
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Global Status Bar -->
+            <div class="global-status-bar compact" id="statusBar">
+                <h1 class="page-title" id="pageTitle">ProTee VX</h1>
+                <div class="status-item" id="statusWebSocket">
+                    <span class="status-icon material-icons">cloud</span>
+                    <span class="status-label">Server</span>
+                    <span class="status-dot"></span>
+                </div>
+                <div class="status-item" id="statusProTee">
+                    <span class="status-icon material-icons">radar</span>
+                    <span class="status-label">ProTee</span>
+                    <span class="status-dot"></span>
+                </div>
+                <div class="status-item" id="statusInfiniteTees">
+                    <span class="status-icon material-icons">golf_course</span>
+                    <span class="status-label">IT</span>
+                    <span class="status-dot"></span>
+                </div>
+            </div>
+
+            <!-- Shot Metrics Bar (fixed bottom) -->
+            <div class="metrics-bar" id="metricsBar">
+                <div class="metrics-row">
+                    <span class="row-label">BALL</span>
+                    <div class="metric-item"><span class="metric-label">Speed</span><span class="metric-value" id="metricBallSpeed">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Launch</span><span class="metric-value" id="metricLaunchAngle">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Dir</span><span class="metric-value" id="metricDirection">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Total</span><span class="metric-value" id="metricTotalSpin">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Back</span><span class="metric-value" id="metricBackSpin">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Side</span><span class="metric-value" id="metricSideSpin">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Axis</span><span class="metric-value" id="metricSpinAxis">-</span></div>
+                </div>
+                <div class="metrics-row">
+                    <span class="row-label">CLUB</span>
+                    <div class="metric-item"><span class="metric-label">Speed</span><span class="metric-value" id="metricClubSpeed">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Attack</span><span class="metric-value" id="metricAttackAngle">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Path</span><span class="metric-value" id="metricClubPath">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Face</span><span class="metric-value" id="metricFaceAngle">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Loft</span><span class="metric-value" id="metricDynamicLoft">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Lie</span><span class="metric-value" id="metricLie">-</span></div>
+                    <div class="metric-item"><span class="metric-label">Closure</span><span class="metric-value" id="metricClosureRate">-</span></div>
+                    <div class="metric-item"><span class="metric-label">H-Imp</span><span class="metric-value" id="metricHImpact">-</span></div>
+                    <div class="metric-item"><span class="metric-label">V-Imp</span><span class="metric-value" id="metricVImpact">-</span></div>
+                </div>
+            </div>
+
+            <!-- Infinite Tees Screen -->
+            <div class="screen" id="infiniteTeesScreen">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Connection Status</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="status-row">
+                            <span class="status-label">Status:</span>
+                            <span class="status-value" id="infiniteTeesStatus">Disconnected</span>
+                        </div>
+                        <div class="error-message" id="infiniteTeesError" style="display: none;"></div>
+
+                        <div class="button-group">
+                            <button class="btn btn-primary" id="infiniteTeesConnectBtn">Connect to Infinite Tees</button>
+                            <button class="btn btn-secondary" id="infiniteTeesDisconnectBtn" disabled>Disconnect</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>About Infinite Tees</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="troubleshooting-info">
+                            <p>Infinite Tees is a golf simulator that supports the GSPro connector protocol.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ProTee VX Screen -->
+            <div class="screen active" id="proteeScreen">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>ProTee VX Status</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="status-row">
+                            <span class="status-label">Status:</span>
+                            <span class="status-value" id="proteeStatus">Disabled</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-label">Watch Path:</span>
+                            <span class="status-value" id="proteeWatchPath" style="font-size: 0.85em; word-break: break-all;">-</span>
+                        </div>
+                        <div class="error-message" id="proteeError" style="display: none;"></div>
+
+                        <div class="button-group">
+                            <button class="btn btn-primary" id="proteeStartBtn">Start Watching</button>
+                            <button class="btn btn-secondary" id="proteeStopBtn" disabled>Stop Watching</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>About ProTee VX</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="troubleshooting-info">
+                            <p>ProTee VX integration reads shot data from the ProTee Labs software.</p>
+                            <p>Shot data files are written to <code>%AppData%\ProTeeUnited\Shots\</code> by the ProTee Labs application.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Screen -->
+            <div class="screen" id="settingsScreen">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Infinite Tees Settings</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="infiniteTeesAutoConnect">
+                                Connect to Infinite Tees automatically
+                            </label>
+                            <p class="helper-text">When enabled, automatically connects to Infinite Tees when the device connects.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="infiniteTeesIP">Infinite Tees IP Address:</label>
+                            <input type="text" id="infiniteTeesIP" class="input-field" value="127.0.0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="infiniteTeesPort">Infinite Tees Port:</label>
+                            <input type="number" id="infiniteTeesPort" class="input-field" value="999">
+                        </div>
+                        <p class="helper-text">Default is localhost (127.0.0.1) on port 999.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Connecting...</div>
+    </div>
+
+    <!-- Toast notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>
