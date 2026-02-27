@@ -11,10 +11,8 @@ import (
 )
 
 const (
-	InitialBackoff    = 5 * time.Second
-	MaxBackoff        = 30 * time.Minute
-	MaxReconnectTime  = 20 * time.Minute
-	MaxFailedAttempts = 20
+	InitialBackoff = 5 * time.Second
+	MaxBackoff     = 30 * time.Minute
 )
 
 type Base struct {
@@ -74,7 +72,7 @@ func (b *Base) Connect(host string, port int) {
 	conn, err := net.DialTimeout("tcp", addr, 5*time.Second)
 	if err != nil {
 		b.ReconnectAttempts++
-		log.Printf("[%s] Error connecting to server: %v (attempt %d/%d)", b.Protocol.Name(), err, b.ReconnectAttempts, MaxFailedAttempts)
+		log.Printf("[%s] Error connecting to server: %v (attempt %d)", b.Protocol.Name(), err, b.ReconnectAttempts)
 		b.Protocol.SetError(fmt.Errorf("failed to connect: %v", err))
 		b.Protocol.SetStatus(StatusError)
 
@@ -317,50 +315,21 @@ func (b *Base) receiveMessages() {
 }
 
 func (b *Base) connectionThread() {
-	firstAttemptTime := time.Now()
-
 	for b.Running {
 		b.ConnectMutex.Lock()
 		connected := b.Connected
 		autoReconnect := b.AutoReconnect
-		reconnectAttempts := b.ReconnectAttempts
 		backoff := b.BackoffDuration
 		lastAttempt := b.LastConnectAttempt
 		b.ConnectMutex.Unlock()
 
 		if !connected && autoReconnect {
-			if time.Since(firstAttemptTime) > MaxReconnectTime {
-				log.Printf("[%s] Reconnection timeout: exceeded %v of reconnection attempts", b.Protocol.Name(), MaxReconnectTime)
-				log.Printf("[%s] Auto-reconnect disabled. Please reconnect manually via the web UI.", b.Protocol.Name())
-				b.DisableAutoReconnect()
-				b.Protocol.SetError(fmt.Errorf("reconnection timeout: please reconnect manually"))
-				b.Protocol.SetStatus(StatusDisconnected)
-				continue
-			}
-
-			if reconnectAttempts >= MaxFailedAttempts {
-				log.Printf("[%s] Reconnection failed: exceeded %d connection attempts", b.Protocol.Name(), MaxFailedAttempts)
-				log.Printf("[%s] Auto-reconnect disabled. Please reconnect manually via the web UI.", b.Protocol.Name())
-				b.DisableAutoReconnect()
-				b.Protocol.SetError(fmt.Errorf("too many failed attempts: please reconnect manually"))
-				b.Protocol.SetStatus(StatusDisconnected)
-				continue
-			}
-
 			if !lastAttempt.IsZero() && time.Since(lastAttempt) < backoff {
 				time.Sleep(1 * time.Second)
 				continue
 			}
 
 			b.Connect(b.Host, b.Port)
-
-			b.ConnectMutex.Lock()
-			if b.Connected {
-				firstAttemptTime = time.Now()
-			}
-			b.ConnectMutex.Unlock()
-		} else if connected {
-			firstAttemptTime = time.Now()
 		}
 
 		time.Sleep(1 * time.Second)
