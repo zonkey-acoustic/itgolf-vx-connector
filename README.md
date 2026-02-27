@@ -11,6 +11,13 @@ VX Connector is a Go-based application that reads shot data from the ProTee VX l
 - **Web-based UI** for monitoring and control
 - **Full data forwarding** — all 7 ball fields and 9 club fields are sent
 
+## Quick Start
+
+1. Download `vx-connector.exe` from the [latest release](https://github.com/zonkey-acoustic/itgolf-vx-connector/releases/latest)
+2. Run `vx-connector.exe` — the web UI opens automatically at `http://localhost:8080`
+3. Click the **Connect** button in the Infinite Tees section of the web UI to establish the connection
+4. Hit shots on the ProTee VX
+
 ## Data Flow
 
 ```
@@ -49,13 +56,6 @@ The ProTee Labs application writes shot data to `%AppData%\ProTeeUnited\Shots\{t
 
 - Windows PC
 - ProTee VX launch monitor with ProTee Labs software installed
-
-## Quick Start
-
-1. Download `vx-connector.exe` from the [latest release](https://github.com/zonkey-acoustic/itgolf-vx-connector/releases/latest)
-2. Run `vx-connector.exe` — the web UI opens automatically at `http://localhost:8080`
-3. Click the **Connect** button in the Infinite Tees section of the web UI to establish the connection
-4. Hit shots on the ProTee VX
 
 ## Building from Source
 
@@ -109,7 +109,7 @@ The simulator waits for Infinite Tees to connect before sending shots.
 
 ## Configuration
 
-Settings are automatically saved and loaded from `~/.squaregolf-connector/config.json`.
+Settings are automatically saved and loaded from `~/.vx-connector/config.json`.
 
 ## Project Structure
 
