@@ -1,11 +1,12 @@
 package web
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
-	"path/filepath"
 	"time"
 
 	"github.com/brentyates/squaregolf-connector/internal/config"
@@ -28,6 +29,7 @@ type Server struct {
 	cameraManager            *camera.Manager
 	enableExternalCamera     bool
 	enableProTee             bool
+	webContent               embed.FS
 	upgrader                 websocket.Upgrader
 	clients                  map[*websocket.Conn]bool
 	broadcast                chan []byte
@@ -101,7 +103,7 @@ type FeatureFlags struct {
 	ProTeeVX       bool `json:"proTeeVX"`
 }
 
-func NewServer(stateManager *core.StateManager, bluetoothManager *core.BluetoothManager, launchMonitor *core.LaunchMonitor, cameraManager *camera.Manager, proteeManager *protee.Manager, gsproIP string, gsproPort int, itIP string, itPort int, enableExternalCamera bool, enableProTee bool) *Server {
+func NewServer(stateManager *core.StateManager, bluetoothManager *core.BluetoothManager, launchMonitor *core.LaunchMonitor, cameraManager *camera.Manager, proteeManager *protee.Manager, gsproIP string, gsproPort int, itIP string, itPort int, enableExternalCamera bool, enableProTee bool, webContent embed.FS) *Server {
 	gsproIntegration := gspro.GetInstance(stateManager, launchMonitor, gsproIP, gsproPort)
 	itIntegration := infinitetees.GetInstance(stateManager, launchMonitor, itIP, itPort)
 
@@ -115,6 +117,7 @@ func NewServer(stateManager *core.StateManager, bluetoothManager *core.Bluetooth
 		cameraManager:           cameraManager,
 		enableExternalCamera:    enableExternalCamera,
 		enableProTee:            enableProTee,
+		webContent:              webContent,
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				return true
@@ -403,8 +406,9 @@ func (s *Server) getInfiniteTeesStatus() InfiniteTeesStatus {
 func (s *Server) Start(port int) error {
 	router := mux.NewRouter()
 
-	// Serve static files with no-cache headers for development
-	staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static/")))
+	// Serve static files from embedded FS
+	staticFS, _ := fs.Sub(s.webContent, "web/static")
+	staticHandler := http.StripPrefix("/static/", http.FileServer(http.FS(staticFS)))
 	router.PathPrefix("/static/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 		w.Header().Set("Pragma", "no-cache")
@@ -466,8 +470,13 @@ func (s *Server) Start(port int) error {
 }
 
 func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
-	indexPath := filepath.Join("web", "index.html")
-	http.ServeFile(w, r, indexPath)
+	data, err := s.webContent.ReadFile("web/index.html")
+	if err != nil {
+		http.Error(w, "Not Found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(data)
 }
 
 func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {

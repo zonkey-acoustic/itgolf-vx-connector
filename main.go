@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
 	"log"
@@ -19,6 +20,9 @@ import (
 	"github.com/brentyates/squaregolf-connector/internal/logging"
 	"github.com/brentyates/squaregolf-connector/internal/web"
 )
+
+//go:embed web/index.html web/static
+var webContent embed.FS
 
 // Application configuration
 type AppConfig struct {
@@ -258,7 +262,7 @@ func startWebServer(config AppConfig, stateManager *core.StateManager, bluetooth
 	}
 
 	// Create web server
-	server := web.NewServer(stateManager, bluetoothManager, launchMonitor, cameraManager, proteeManager, config.GSProIP, config.GSProPort, config.InfiniteTeesIP, config.InfiniteTeesPort, config.EnableExternalCamera, enableProTee)
+	server := web.NewServer(stateManager, bluetoothManager, launchMonitor, cameraManager, proteeManager, config.GSProIP, config.GSProPort, config.InfiniteTeesIP, config.InfiniteTeesPort, config.EnableExternalCamera, enableProTee, webContent)
 
 	// Setup auto-connects based on settings
 	if config.EnableGSPro || settings.GSProAutoConnect {
