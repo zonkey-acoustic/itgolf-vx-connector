@@ -54,7 +54,7 @@ The ProTee Labs application writes shot data to `%AppData%\ProTeeUnited\Shots\{t
 
 1. Download `vx-connector.exe` from the [latest release](https://github.com/zonkey-acoustic/itgolf-vx-connector/releases/latest)
 2. Run `vx-connector.exe` — the web UI opens automatically at `http://localhost:8080`
-3. Connect to Infinite Tees from the web UI
+3. Click the **Connect** button in the Infinite Tees section of the web UI to establish the connection
 4. Hit shots on the ProTee VX
 
 ## Building from Source
