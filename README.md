@@ -164,6 +164,10 @@ Settings are automatically saved and loaded from `~/.squaregolf-connector/config
 - Confirm port 8080 is not already in use
 - Try a different port with `--web-port`
 
+## Acknowledgements
+
+This project is based on [squaregolf-connector](https://github.com/brentyates/squaregolf-connector) by Brent Yates, which provides Bluetooth connectivity for SquareGolf launch monitors with GSPro integration. The core architecture, state management, and web UI were adapted from that project.
+
 ## License
 
 See [LICENSE](LICENSE) file for details.
