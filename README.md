@@ -47,11 +47,19 @@ The ProTee Labs application writes shot data to `%AppData%\ProTeeUnited\Shots\{t
 
 ## Requirements
 
-- Go 1.23 or later
-- Windows (ProTee Labs runs on Windows)
+- Windows PC
 - ProTee VX launch monitor with ProTee Labs software installed
 
-## Installation
+## Quick Start
+
+1. Download `vx-connector.exe` from the [latest release](https://github.com/zonkey-acoustic/itgolf-vx-connector/releases/latest)
+2. Run `vx-connector.exe` — the web UI opens automatically at `http://localhost:8080`
+3. Connect to Infinite Tees from the web UI
+4. Hit shots on the ProTee VX
+
+## Building from Source
+
+Requires Go 1.23 or later.
 
 ```bash
 git clone https://github.com/zonkey-acoustic/itgolf-vx-connector.git
@@ -62,13 +70,6 @@ go build -o vx-connector.exe main.go
 ```
 
 ## Usage
-
-### Default Mode
-
-```bash
-# Start with web UI — ProTee VX enabled by default
-./vx-connector
-```
 
 The web interface will be available at `http://localhost:8080`. The app automatically:
 - Starts watching the ProTee Shots directory
